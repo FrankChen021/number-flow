@@ -58,6 +58,16 @@ export default class NumberFlow extends NumberFlowLite {
 		return this._value
 	}
 
+	private getIntlFormat(format?: Format): Intl.NumberFormatOptions | undefined {
+		if (!format) return undefined
+		const { notation, ...rest } = format
+		// Remove binary_size notation as it's not supported by Intl.NumberFormat
+		if (notation === 'binary_size') {
+			return rest
+		}
+		return format as Intl.NumberFormatOptions
+	}
+
 	update(value?: Value) {
 		// Might want to do a deep-equal check here:
 		if (
@@ -65,7 +75,7 @@ export default class NumberFlow extends NumberFlowLite {
 			this._prevFormat !== this.format ||
 			this._prevLocales !== this.locales
 		) {
-			this._formatter = new Intl.NumberFormat(this.locales, this.format)
+			this._formatter = new Intl.NumberFormat(this.locales, this.getIntlFormat(this.format))
 			this._prevFormat = this.format
 			this._prevLocales = this.locales
 		}

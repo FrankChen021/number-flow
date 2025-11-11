@@ -54,7 +54,7 @@
 	},
 	"dependencies": {
 		"esm-env": "^1.1.4",
-		"number-flow": "workspace:*"
+		"number-flow": "file:../number-flow"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.48.0",

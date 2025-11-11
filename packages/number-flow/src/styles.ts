@@ -85,6 +85,16 @@ const styles = css`
 		line-height: ${charHeight} !important;
 	}
 
+	:host(.underline) .number,
+	:host(.underline) .number__inner,
+	:host(.underline) .section,
+	:host(.underline) .digit,
+	:host(.underline) .digit__num,
+	:host(.underline) .symbol,
+	:host(.underline) .symbol__value {
+		text-decoration: underline;
+	}
+
 	.number,
 	.number__inner {
 		display: inline-block;

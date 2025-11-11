@@ -21,7 +21,7 @@ export type KeyedSymbolPart = SymbolPart & KeyedPart
 export type KeyedNumberPart = KeyedDigitPart | KeyedSymbolPart
 
 export type Format = Omit<Intl.NumberFormatOptions, 'notation'> & {
-	notation?: Exclude<Intl.NumberFormatOptions['notation'], 'scientific' | 'engineering'>
+	notation?: Exclude<Intl.NumberFormatOptions['notation'], 'scientific' | 'engineering'> | 'binary_size'
 }
 
 export type Value = Exclude<

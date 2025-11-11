@@ -212,12 +212,44 @@ const NumberFlow = React.forwardRef<NumberFlowElement, NumberFlowProps>(function
 	const localesString = React.useMemo(() => (locales ? JSON.stringify(locales) : ''), [locales])
 	const formatString = React.useMemo(() => (format ? JSON.stringify(format) : ''), [format])
 	const data = React.useMemo(() => {
-		const formatter = (formatters[`${localesString}:${formatString}`] ??= new Intl.NumberFormat(
+		// Handle binary size format
+		let displayValue = value
+		let sizeSuffix = suffix
+		const isBinarySize = format?.notation === 'binary_size'
+		
+		if (isBinarySize && typeof value === 'number') {
+			const units = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB']
+			let size = Math.abs(value)
+			let unitIndex = 0
+			
+			while (size >= 1024 && unitIndex < units.length - 1) {
+				size /= 1024
+				unitIndex++
+			}
+			
+			displayValue = value < 0 ? -size : size
+			sizeSuffix = (suffix ? suffix + ' ' : ' ') + units[unitIndex]
+		}
+		
+		// Create formatter without binary_size notation (use standard notation instead)
+		let intlFormat: Intl.NumberFormatOptions | undefined
+		if (format) {
+			const { notation, ...rest } = format
+			// Remove binary_size notation as it's not supported by Intl.NumberFormat
+			if (notation !== 'binary_size') {
+				intlFormat = format as Intl.NumberFormatOptions
+			} else {
+				intlFormat = rest as Intl.NumberFormatOptions
+			}
+		}
+		
+		const formatter = (formatters[`${localesString}:${JSON.stringify(intlFormat)}`] ??= new Intl.NumberFormat(
 			locales,
-			format
+			intlFormat
 		))
-		return formatToData(value, formatter, prefix, suffix)
-	}, [value, localesString, formatString, prefix, suffix])
+		
+		return formatToData(displayValue, formatter, prefix, sizeSuffix)
+	}, [value, localesString, formatString, prefix, suffix, format])
 
 	return <NumberFlowImpl {...props} group={group} data={data} innerRef={ref} />
 })
